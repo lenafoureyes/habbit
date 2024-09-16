@@ -12,15 +12,19 @@ class HabitsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupCollectionView()  // Вызов сначала, чтобы коллекция была настроена до layout
-        setupLayout()          // Вызов после настройки collectionView
+        setupCollectionView()
+        setupLayout()
         setupCustomNavigationBar()
         view.backgroundColor = .white
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        collectionView.reloadData() // Перезагружаем данные коллекции каждый раз, когда экран появляется
+    }
+
     // Настраиваем кастомный заголовок и кнопку добавления привычек
     private func setupCustomNavigationBar() {
-        // Настраиваем кнопку добавления привычек в правом углу
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
     }
 
@@ -32,44 +36,35 @@ class HabitsViewController: UIViewController {
         present(navigationController, animated: true)
     }
 
-    // Настройка компоновки экрана
     private func setupLayout() {
-        // Создаем кастомный заголовок
         let customTitleView = CustomTitleView()
         customTitleView.translatesAutoresizingMaskIntoConstraints = false
         
-        // Создаем стек для размещения заголовка и коллекции
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 0
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
-        // Добавляем в стек кастомное представление заголовка и коллекцию
         stackView.addArrangedSubview(customTitleView)
         stackView.addArrangedSubview(collectionViewContainer())
 
         view.addSubview(stackView)
         
-        // Устанавливаем констрейнты для стека
         NSLayoutConstraint.activate([
             stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             stackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             stackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            
-            // Фиксированная высота для кастомного заголовка
             customTitleView.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
 
-    // Создаем контейнер для UICollectionView
     private func collectionViewContainer() -> UIView {
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
 
         containerView.addSubview(collectionView)
         
-        // Устанавливаем констрейнты для коллекции
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: containerView.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
@@ -80,7 +75,6 @@ class HabitsViewController: UIViewController {
         return containerView
     }
 
-    // Настройка UICollectionView
     private func setupCollectionView() {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -90,7 +84,6 @@ class HabitsViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.delegate = self
         collectionView.dataSource = self
-
         collectionView.backgroundColor = UIColor(red: 242/255, green: 242/255, blue: 247/255, alpha: 1)
 
         collectionView.register(ProgressCollectionViewCell.self, forCellWithReuseIdentifier: ProgressCollectionViewCell.identifier)
@@ -147,6 +140,23 @@ extension HabitsViewController: UICollectionViewDataSource, UICollectionViewDele
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 15
     }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if indexPath.section == 1 {
+            let selectedHabit = HabitsStore.shared.habits[indexPath.item]
+            let habitDetailsVC = HabitDetailsViewController(habit: selectedHabit)
+            
+            // Создаем UINavigationController с HabitDetailsViewController как корневым контроллером
+            let navigationController = UINavigationController(rootViewController: habitDetailsVC)
+            
+            // Устанавливаем стиль отображения модального окна (на весь экран)
+            navigationController.modalPresentationStyle = .fullScreen
+            
+            // Открываем модально
+            present(navigationController, animated: true)
+        }
+    }
 }
 
 // MARK: - HabitCollectionViewCellDelegate
@@ -155,7 +165,7 @@ extension HabitsViewController: HabitCollectionViewCellDelegate {
     func didTapTrackButton(for habit: Habit) {
         if !habit.isAlreadyTakenToday {
             HabitsStore.shared.track(habit)
-            collectionView.reloadData() // Обновляем коллекцию после трекинга привычки
+            collectionView.reloadData()
         }
     }
 }

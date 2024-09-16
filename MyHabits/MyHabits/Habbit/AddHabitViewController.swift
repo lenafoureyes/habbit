@@ -21,16 +21,33 @@ class AddHabitViewController: UIViewController {
     // Current habit color
     var currentColor = UIColor.systemRed
     
+    // Ссылка на редактируемую привычку (если есть)
+    var habit: Habit?
+    
     // Ссылка на родительский HabitsViewController
     var habitsViewController: HabitsViewController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        title = "Создать"
+        title = habit != nil ? "Редактировать" : "Создать"
         setupNavigationBarButtons()
         setupUI()
+        
+        if let habit = habit {
+            loadHabitData(habit)
+        }
     }
+    
+    init(habit: Habit? = nil) {
+        self.habit = habit
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     
     func setupNavigationBarButtons() {
         // Кнопка "Отменить"
@@ -42,9 +59,31 @@ class AddHabitViewController: UIViewController {
         let saveButton = UIBarButtonItem(title: "Сохранить", style: .done, target: self, action: #selector(saveButtonTapped))
         saveButton.tintColor = UIColor(red: 161/255.0, green: 22/255.0, blue: 204/255.0, alpha: 1.0)
         navigationItem.rightBarButtonItem = saveButton
+        
+        // Кнопка "Удалить", только если редактируем привычку
+        
     }
     
     func setupUI() {
+        let isEditingHabit = habit != nil
+        if isEditingHabit {
+            let deleteButton = UIButton(type: .system)
+            deleteButton.setTitle("Удалить привычку", for: .normal)
+            deleteButton.setTitleColor(.white, for: .normal)
+            deleteButton.backgroundColor = .red
+            deleteButton.layer.cornerRadius = 10
+            deleteButton.translatesAutoresizingMaskIntoConstraints = false
+            deleteButton.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
+            view.addSubview(deleteButton)
+            
+            // Констрейнты для кнопки удаления
+            NSLayoutConstraint.activate([
+                deleteButton.heightAnchor.constraint(equalToConstant: 50),
+                deleteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+                deleteButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+                deleteButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
+            ])
+        }
         titleLablel.text = "НАЗВАНИЕ"
         titleLablel.textColor = .black
         titleLablel.font = UIFont(name: "SFProText-Semibold", size: 13)
@@ -95,6 +134,9 @@ class AddHabitViewController: UIViewController {
         view.addSubview(descriptionSelectDataLabel)
         
         NSLayoutConstraint.activate([
+            
+            
+            
             titleLablel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 21),
             titleLablel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleLablel.widthAnchor.constraint(equalToConstant: 90),
@@ -135,6 +177,18 @@ class AddHabitViewController: UIViewController {
         ])
     }
     
+    // Загрузка данных привычки для редактирования
+    func loadHabitData(_ habit: Habit) {
+        habitNameTextField.text = habit.name
+        currentColor = habit.color
+        colorView.backgroundColor = habit.color
+        datePicker.date = habit.date
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeStyle = .short
+        selectDateLabel.text = dateFormatter.string(from: habit.date)
+    }
+    
     // MARK: - Actions
     
     @objc func cancelButtonTapped() {
@@ -142,19 +196,26 @@ class AddHabitViewController: UIViewController {
     }
     
     @objc private func saveButtonTapped() {
-            guard let habitName = habitNameTextField.text, !habitName.isEmpty else {
-                showAlert(title: "Ошибка", message: "Введите название привычки.")
-                return
-            }
-            
-            let newHabit = Habit(name: habitName, date: datePicker.date, color: currentColor)
-            HabitsStore.shared.habits.append(newHabit)
-            
-            // Обновляем данные в коллекции после добавления новой привычки
-            habitsViewController?.collectionView.reloadData()
-            dismiss(animated: true, completion: nil)
+        guard let habitName = habitNameTextField.text, !habitName.isEmpty else {
+            showAlert(title: "Ошибка", message: "Введите название привычки.")
+            return
         }
         
+        if let habit = habit {
+            // Обновляем существующую привычку
+            habit.name = habitName
+            habit.color = currentColor
+            habit.date = datePicker.date
+        } else {
+            // Создаём новую привычку
+            let newHabit = Habit(name: habitName, date: datePicker.date, color: currentColor)
+            HabitsStore.shared.habits.append(newHabit)
+        }
+        
+        // Обновляем данные в коллекции после сохранения привычки
+        habitsViewController?.collectionView.reloadData()
+        dismiss(animated: true, completion: nil)
+    }
     
     @objc func colorViewTapped() {
         let colorPicker = UIColorPickerViewController()
@@ -169,16 +230,45 @@ class AddHabitViewController: UIViewController {
         selectDateLabel.text = dateFormatter.string(from: datePicker.date)
     }
     
-    // MARK: - Alert
-    
+    @objc private func deleteButtonTapped() {
+        guard let habit = habit else { return }
+
+        let alert = UIAlertController(title: "Удалить привычку", message: "Вы уверены, что хотите удалить эту привычку?", preferredStyle: .alert)
+
+        alert.addAction(UIAlertAction(title: "Отменить", style: .cancel, handler: nil))
+
+        alert.addAction(UIAlertAction(title: "Удалить", style: .destructive, handler: { _ in
+            if let index = HabitsStore.shared.habits.firstIndex(where: { $0 == habit }) {
+                HabitsStore.shared.habits.remove(at: index)
+                self.habitsViewController?.collectionView.reloadData()
+
+                // Найдем самый верхний контроллер и закроем его
+                var topController = self.presentingViewController
+
+                while let presentedVC = topController?.presentedViewController {
+                    topController = presentedVC
+                }
+
+                // Закрываем все модальные контроллеры
+                topController?.dismiss(animated: true, completion: nil)
+            }
+        }))
+
+        present(alert, animated: true, completion: nil)
+    }
+
+
+
+}
+
+// MARK: - UIColorPickerViewControllerDelegate
+extension UIViewController {
     func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
 }
-
-// MARK: - UIColorPickerViewControllerDelegate
 
 extension AddHabitViewController: UIColorPickerViewControllerDelegate {
     func colorPickerViewController(_ viewController: UIColorPickerViewController, didSelect color: UIColor, continuously: Bool) {

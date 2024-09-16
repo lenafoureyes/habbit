@@ -108,7 +108,7 @@ class HabitCollectionViewCell: UICollectionViewCell {
         guard let habit = habit else { return }
         
         // Проверяем, можно ли добавить отметку: если выполнено менее 5 раз и не отмечено сегодня
-        let completionCount = habit.trackDates.filter { Calendar.current.isDateInToday($0) }.count
+  //      let completionCount = habit.trackDates.filter { Calendar.current.isDateInToday($0) }.count
         let totalTrackCount = habit.trackDates.count
         
         if totalTrackCount < maxTrackCount && !habit.isAlreadyTakenToday {
@@ -128,7 +128,7 @@ class HabitCollectionViewCell: UICollectionViewCell {
         guard let habit = habit else { return }
         
         // Считаем количество выполнений привычки
-        let completionCount = habit.trackDates.filter { Calendar.current.isDateInToday($0) }.count
+//        let completionCount = habit.trackDates.filter { Calendar.current.isDateInToday($0) }.count
         let totalTrackCount = habit.trackDates.count
         
         // Обновляем состояние кнопки отслеживания выполнения привычки
