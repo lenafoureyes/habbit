@@ -147,6 +147,9 @@ extension HabitsViewController: UICollectionViewDataSource, UICollectionViewDele
             let selectedHabit = HabitsStore.shared.habits[indexPath.item]
             let habitDetailsVC = HabitDetailsViewController(habit: selectedHabit)
             
+            // Назначаем делегат
+            habitDetailsVC.dismissalDelegate = self
+            
             // Создаем UINavigationController с HabitDetailsViewController как корневым контроллером
             let navigationController = UINavigationController(rootViewController: habitDetailsVC)
             
@@ -157,6 +160,7 @@ extension HabitsViewController: UICollectionViewDataSource, UICollectionViewDele
             present(navigationController, animated: true)
         }
     }
+
 }
 
 // MARK: - HabitCollectionViewCellDelegate
@@ -167,5 +171,11 @@ extension HabitsViewController: HabitCollectionViewCellDelegate {
             HabitsStore.shared.track(habit)
             collectionView.reloadData()
         }
+    }
+}
+extension HabitsViewController: ModalDismissalDelegate {
+    func dismissAllModals() {
+        // Закрываем все представленные модальные контроллеры
+        self.dismiss(animated: true, completion: nil)
     }
 }

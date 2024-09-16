@@ -13,6 +13,7 @@
 		31B734F62C95E83F00824777 /* HabitCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B734F52C95E83F00824777 /* HabitCollectionViewCell.swift */; };
 		31B735422C97773700824777 /* CustomTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B735412C97773700824777 /* CustomTitleView.swift */; };
 		31B735442C9879EF00824777 /* HabitDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B735432C9879ED00824777 /* HabitDetailsViewController.swift */; };
+		31B735482C98BC1800824777 /* ModalDismissalDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B735472C98BC1700824777 /* ModalDismissalDelegate.swift */; };
 		31D18C7E2C8DD13600758253 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31D18C7D2C8DD13600758253 /* AppDelegate.swift */; };
 		31D18C802C8DD13600758253 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31D18C7F2C8DD13600758253 /* SceneDelegate.swift */; };
 		31D18C822C8DD13600758253 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31D18C812C8DD13600758253 /* ViewController.swift */; };
@@ -35,6 +36,7 @@
 		31B734F52C95E83F00824777 /* HabitCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitCollectionViewCell.swift; sourceTree = "<group>"; };
 		31B735412C97773700824777 /* CustomTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTitleView.swift; sourceTree = "<group>"; };
 		31B735432C9879ED00824777 /* HabitDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitDetailsViewController.swift; sourceTree = "<group>"; };
+		31B735472C98BC1700824777 /* ModalDismissalDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalDismissalDelegate.swift; sourceTree = "<group>"; };
 		31D18C7A2C8DD13600758253 /* MyHabits.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyHabits.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		31D18C7D2C8DD13600758253 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		31D18C7F2C8DD13600758253 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -102,6 +104,7 @@
 			isa = PBXGroup;
 			children = (
 				31D18C9C2C8E198600758253 /* AddHabitViewController.swift */,
+				31B735472C98BC1700824777 /* ModalDismissalDelegate.swift */,
 				31D18C962C8DE48000758253 /* HabitsViewController.swift */,
 				31B735412C97773700824777 /* CustomTitleView.swift */,
 				31B734F52C95E83F00824777 /* HabitCollectionViewCell.swift */,
@@ -209,6 +212,7 @@
 				31D18C9D2C8E198600758253 /* AddHabitViewController.swift in Sources */,
 				31D18C802C8DD13600758253 /* SceneDelegate.swift in Sources */,
 				31B734F62C95E83F00824777 /* HabitCollectionViewCell.swift in Sources */,
+				31B735482C98BC1800824777 /* ModalDismissalDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

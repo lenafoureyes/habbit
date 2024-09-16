@@ -4,11 +4,11 @@
 //
 //  Created by Елена Хайрова on 16.09.2024.
 //
-
 import UIKit
 
 class HabitDetailsViewController: UIViewController {
     
+    weak var dismissalDelegate: ModalDismissalDelegate?
     private let habit: Habit
     private let tableView = UITableView()
 
@@ -26,18 +26,26 @@ class HabitDetailsViewController: UIViewController {
         
         view.backgroundColor = .white
         navigationItem.title = habit.name
+        
+        // Добавляем кнопку "Назад"
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "< Назад", style: .plain, target: self, action: #selector(backButtonTapped))
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Править", style: .plain, target: self, action: #selector(editHabit))
 
         setupTableView()
     }
 
+    @objc private func backButtonTapped() {
+        // Вернуться назад
+        dismiss(animated: true, completion: nil)
+    }
+
     @objc private func editHabit() {
         let addHabitVC = AddHabitViewController(habit: habit)
-            
-            // Передаем ссылку на текущий контроллер
-            let navigationController = UINavigationController(rootViewController: addHabitVC)
-            navigationController.modalPresentationStyle = .fullScreen
-            present(navigationController, animated: true)
+        addHabitVC.dismissalDelegate = self.dismissalDelegate
+        let navController = UINavigationController(rootViewController: addHabitVC)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: true, completion: nil)
     }
 
     private func setupTableView() {

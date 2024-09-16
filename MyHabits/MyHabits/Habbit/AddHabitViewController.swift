@@ -7,7 +7,7 @@
 import UIKit
 
 class AddHabitViewController: UIViewController {
-    
+    weak var dismissalDelegate: ModalDismissalDelegate?
     // UI Elements
     let habitNameTextField = UITextField()
     let colorView = UIView()
@@ -231,31 +231,24 @@ class AddHabitViewController: UIViewController {
     }
     
     @objc private func deleteButtonTapped() {
-        guard let habit = habit else { return }
+            guard let habit = habit else { return }
 
-        let alert = UIAlertController(title: "Удалить привычку", message: "Вы уверены, что хотите удалить эту привычку?", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Удалить привычку", message: "Вы уверены, что хотите удалить эту привычку?", preferredStyle: .alert)
 
-        alert.addAction(UIAlertAction(title: "Отменить", style: .cancel, handler: nil))
+            alert.addAction(UIAlertAction(title: "Отменить", style: .cancel, handler: nil))
 
-        alert.addAction(UIAlertAction(title: "Удалить", style: .destructive, handler: { _ in
-            if let index = HabitsStore.shared.habits.firstIndex(where: { $0 == habit }) {
-                HabitsStore.shared.habits.remove(at: index)
-                self.habitsViewController?.collectionView.reloadData()
+            alert.addAction(UIAlertAction(title: "Удалить", style: .destructive, handler: { _ in
+                if let index = HabitsStore.shared.habits.firstIndex(where: { $0 == habit }) {
+                    HabitsStore.shared.habits.remove(at: index)
+                    self.habitsViewController?.collectionView.reloadData()
 
-                // Найдем самый верхний контроллер и закроем его
-                var topController = self.presentingViewController
-
-                while let presentedVC = topController?.presentedViewController {
-                    topController = presentedVC
+                    // Уведомляем делегата о необходимости закрыть модальные окна
+                    self.dismissalDelegate?.dismissAllModals()
                 }
+            }))
 
-                // Закрываем все модальные контроллеры
-                topController?.dismiss(animated: true, completion: nil)
-            }
-        }))
-
-        present(alert, animated: true, completion: nil)
-    }
+            present(alert, animated: true, completion: nil)
+        }
 
 
 
