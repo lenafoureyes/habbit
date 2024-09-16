@@ -8,7 +8,6 @@ import UIKit
 
 class AddHabitViewController: UIViewController {
     weak var dismissalDelegate: ModalDismissalDelegate?
-    // UI Elements
     let habitNameTextField = UITextField()
     let colorView = UIView()
     let datePicker = UIDatePicker()
@@ -18,7 +17,6 @@ class AddHabitViewController: UIViewController {
     let selectDateLabel = UILabel()
     let descriptionSelectDataLabel = UILabel()
     
-    // Current habit color
     var currentColor = UIColor.systemRed
     
     // Ссылка на редактируемую привычку (если есть)
@@ -69,9 +67,7 @@ class AddHabitViewController: UIViewController {
         if isEditingHabit {
             let deleteButton = UIButton(type: .system)
             deleteButton.setTitle("Удалить привычку", for: .normal)
-            deleteButton.setTitleColor(.white, for: .normal)
-            deleteButton.backgroundColor = .red
-            deleteButton.layer.cornerRadius = 10
+            deleteButton.setTitleColor(.red, for: .normal)
             deleteButton.translatesAutoresizingMaskIntoConstraints = false
             deleteButton.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
             view.addSubview(deleteButton)
@@ -215,6 +211,7 @@ class AddHabitViewController: UIViewController {
         // Обновляем данные в коллекции после сохранения привычки
         habitsViewController?.collectionView.reloadData()
         dismiss(animated: true, completion: nil)
+        self.dismissalDelegate?.dismissAllModals()
     }
     
     @objc func colorViewTapped() {
@@ -231,27 +228,27 @@ class AddHabitViewController: UIViewController {
     }
     
     @objc private func deleteButtonTapped() {
-            guard let habit = habit else { return }
-
-            let alert = UIAlertController(title: "Удалить привычку", message: "Вы уверены, что хотите удалить эту привычку?", preferredStyle: .alert)
-
-            alert.addAction(UIAlertAction(title: "Отменить", style: .cancel, handler: nil))
-
-            alert.addAction(UIAlertAction(title: "Удалить", style: .destructive, handler: { _ in
-                if let index = HabitsStore.shared.habits.firstIndex(where: { $0 == habit }) {
-                    HabitsStore.shared.habits.remove(at: index)
-                    self.habitsViewController?.collectionView.reloadData()
-
-                    // Уведомляем делегата о необходимости закрыть модальные окна
-                    self.dismissalDelegate?.dismissAllModals()
-                }
-            }))
-
-            present(alert, animated: true, completion: nil)
-        }
-
-
-
+        guard let habit = habit else { return }
+        
+        let alert = UIAlertController(title: "Удалить привычку", message: "Вы уверены, что хотите удалить эту привычку?", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Отменить", style: .cancel, handler: nil))
+        
+        alert.addAction(UIAlertAction(title: "Удалить", style: .destructive, handler: { _ in
+            if let index = HabitsStore.shared.habits.firstIndex(where: { $0 == habit }) {
+                HabitsStore.shared.habits.remove(at: index)
+                self.habitsViewController?.collectionView.reloadData()
+                
+                // Уведомляем делегата о необходимости закрыть модальные окна
+                self.dismissalDelegate?.dismissAllModals()
+            }
+        }))
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    
+    
 }
 
 // MARK: - UIColorPickerViewControllerDelegate

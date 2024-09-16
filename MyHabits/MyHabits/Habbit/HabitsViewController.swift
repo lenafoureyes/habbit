@@ -25,7 +25,16 @@ class HabitsViewController: UIViewController {
 
     // Настраиваем кастомный заголовок и кнопку добавления привычек
     private func setupCustomNavigationBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
+        let buttonColor = UIColor(red: 161/255.0, green: 22/255.0, blue: 204/255.0, alpha: 1.0)
+        
+        // Создаем UIBarButtonItem с системным элементом .add
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
+        
+        // Задаем цвет для кнопки
+        addButton.tintColor = buttonColor
+        
+        // Добавляем кнопку в правую часть navigation bar
+        navigationItem.rightBarButtonItem = addButton
     }
 
     @objc func addButtonTapped() {
