@@ -9,7 +9,7 @@ import UIKit
 class HabitsViewController: UIViewController {
     
     public var collectionView: UICollectionView!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCollectionView()
@@ -17,34 +17,30 @@ class HabitsViewController: UIViewController {
         setupCustomNavigationBar()
         view.backgroundColor = .white
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        collectionView.reloadData() // Перезагружаем данные коллекции каждый раз, когда экран появляется
+        collectionView.reloadData() 
     }
-
-    // Настраиваем кастомный заголовок и кнопку добавления привычек
+    
     private func setupCustomNavigationBar() {
         let buttonColor = UIColor(red: 161/255.0, green: 22/255.0, blue: 204/255.0, alpha: 1.0)
         
-        // Создаем UIBarButtonItem с системным элементом .add
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
         
-        // Задаем цвет для кнопки
         addButton.tintColor = buttonColor
         
-        // Добавляем кнопку в правую часть navigation bar
         navigationItem.rightBarButtonItem = addButton
     }
-
+    
     @objc func addButtonTapped() {
         let addHabitVC = AddHabitViewController()
-        addHabitVC.habitsViewController = self // Передаем ссылку на текущий контроллер
+        addHabitVC.habitsViewController = self 
         let navigationController = UINavigationController(rootViewController: addHabitVC)
         navigationController.modalPresentationStyle = .fullScreen
         present(navigationController, animated: true)
     }
-
+    
     private func setupLayout() {
         let customTitleView = CustomTitleView()
         customTitleView.translatesAutoresizingMaskIntoConstraints = false
@@ -56,7 +52,7 @@ class HabitsViewController: UIViewController {
         
         stackView.addArrangedSubview(customTitleView)
         stackView.addArrangedSubview(collectionViewContainer())
-
+        
         view.addSubview(stackView)
         
         NSLayoutConstraint.activate([
@@ -67,11 +63,11 @@ class HabitsViewController: UIViewController {
             customTitleView.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
-
+    
     private func collectionViewContainer() -> UIView {
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
-
+        
         containerView.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
@@ -83,24 +79,22 @@ class HabitsViewController: UIViewController {
         
         return containerView
     }
-
+    
     private func setupCollectionView() {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-
+        
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = UIColor(red: 242/255, green: 242/255, blue: 247/255, alpha: 1)
-
+        
         collectionView.register(ProgressCollectionViewCell.self, forCellWithReuseIdentifier: ProgressCollectionViewCell.identifier)
         collectionView.register(HabitCollectionViewCell.self, forCellWithReuseIdentifier: HabitCollectionViewCell.identifier)
     }
 }
-
-// MARK: - UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
 
 extension HabitsViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
@@ -155,24 +149,14 @@ extension HabitsViewController: UICollectionViewDataSource, UICollectionViewDele
         if indexPath.section == 1 {
             let selectedHabit = HabitsStore.shared.habits[indexPath.item]
             let habitDetailsVC = HabitDetailsViewController(habit: selectedHabit)
-            
-            // Назначаем делегат
             habitDetailsVC.dismissalDelegate = self
-            
-            // Создаем UINavigationController с HabitDetailsViewController как корневым контроллером
             let navigationController = UINavigationController(rootViewController: habitDetailsVC)
-            
-            // Устанавливаем стиль отображения модального окна (на весь экран)
             navigationController.modalPresentationStyle = .fullScreen
-            
-            // Открываем модально
             present(navigationController, animated: true)
         }
     }
-
+    
 }
-
-// MARK: - HabitCollectionViewCellDelegate
 
 extension HabitsViewController: HabitCollectionViewCellDelegate {
     func didTapTrackButton(for habit: Habit) {
@@ -184,7 +168,6 @@ extension HabitsViewController: HabitCollectionViewCellDelegate {
 }
 extension HabitsViewController: ModalDismissalDelegate {
     func dismissAllModals() {
-        // Закрываем все представленные модальные контроллеры
         self.dismiss(animated: true, completion: nil)
     }
 }

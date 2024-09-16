@@ -19,10 +19,8 @@ class AddHabitViewController: UIViewController {
     
     var currentColor = UIColor.systemRed
     
-    // Ссылка на редактируемую привычку (если есть)
     var habit: Habit?
     
-    // Ссылка на родительский HabitsViewController
     var habitsViewController: HabitsViewController?
     
     override func viewDidLoad() {
@@ -48,18 +46,13 @@ class AddHabitViewController: UIViewController {
     
     
     func setupNavigationBarButtons() {
-        // Кнопка "Отменить"
         let cancelButton = UIBarButtonItem(title: "Отменить", style: .plain, target: self, action: #selector(cancelButtonTapped))
         cancelButton.tintColor = UIColor(red: 161/255.0, green: 22/255.0, blue: 204/255.0, alpha: 1.0)
         navigationItem.leftBarButtonItem = cancelButton
         
-        // Кнопка "Сохранить"
         let saveButton = UIBarButtonItem(title: "Сохранить", style: .done, target: self, action: #selector(saveButtonTapped))
         saveButton.tintColor = UIColor(red: 161/255.0, green: 22/255.0, blue: 204/255.0, alpha: 1.0)
         navigationItem.rightBarButtonItem = saveButton
-        
-        // Кнопка "Удалить", только если редактируем привычку
-        
     }
     
     func setupUI() {
@@ -72,7 +65,6 @@ class AddHabitViewController: UIViewController {
             deleteButton.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
             view.addSubview(deleteButton)
             
-            // Констрейнты для кнопки удаления
             NSLayoutConstraint.activate([
                 deleteButton.heightAnchor.constraint(equalToConstant: 50),
                 deleteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
@@ -131,8 +123,6 @@ class AddHabitViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             
-            
-            
             titleLablel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 21),
             titleLablel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleLablel.widthAnchor.constraint(equalToConstant: 90),
@@ -173,7 +163,6 @@ class AddHabitViewController: UIViewController {
         ])
     }
     
-    // Загрузка данных привычки для редактирования
     func loadHabitData(_ habit: Habit) {
         habitNameTextField.text = habit.name
         currentColor = habit.color
@@ -184,8 +173,6 @@ class AddHabitViewController: UIViewController {
         dateFormatter.timeStyle = .short
         selectDateLabel.text = dateFormatter.string(from: habit.date)
     }
-    
-    // MARK: - Actions
     
     @objc func cancelButtonTapped() {
         dismiss(animated: true, completion: nil)
@@ -198,17 +185,13 @@ class AddHabitViewController: UIViewController {
         }
         
         if let habit = habit {
-            // Обновляем существующую привычку
             habit.name = habitName
             habit.color = currentColor
             habit.date = datePicker.date
         } else {
-            // Создаём новую привычку
             let newHabit = Habit(name: habitName, date: datePicker.date, color: currentColor)
             HabitsStore.shared.habits.append(newHabit)
         }
-        
-        // Обновляем данные в коллекции после сохранения привычки
         habitsViewController?.collectionView.reloadData()
         dismiss(animated: true, completion: nil)
         self.dismissalDelegate?.dismissAllModals()
@@ -238,8 +221,6 @@ class AddHabitViewController: UIViewController {
             if let index = HabitsStore.shared.habits.firstIndex(where: { $0 == habit }) {
                 HabitsStore.shared.habits.remove(at: index)
                 self.habitsViewController?.collectionView.reloadData()
-                
-                // Уведомляем делегата о необходимости закрыть модальные окна
                 self.dismissalDelegate?.dismissAllModals()
             }
         }))
@@ -251,7 +232,6 @@ class AddHabitViewController: UIViewController {
     
 }
 
-// MARK: - UIColorPickerViewControllerDelegate
 extension UIViewController {
     func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)

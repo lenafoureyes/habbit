@@ -17,7 +17,6 @@ class HabitCollectionViewCell: UICollectionViewCell {
     weak var delegate: HabitCollectionViewCellDelegate?
     private var habit: Habit?
     
-    // Максимальное количество выполнений за всё время
     private let maxTrackCount = 5
     
     private let nameLabel: UILabel = {
@@ -35,7 +34,6 @@ class HabitCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    // Надпись для отображения прогресса
     private let progressLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "SFProText-Regular", size: 13)
@@ -66,7 +64,7 @@ class HabitCollectionViewCell: UICollectionViewCell {
     private func setupViews() {
         addSubview(nameLabel)
         addSubview(timeLabel)
-        addSubview(progressLabel) // Добавляем надпись прогресса
+        addSubview(progressLabel)
         addSubview(trackButton)
         
         NSLayoutConstraint.activate([
@@ -83,7 +81,6 @@ class HabitCollectionViewCell: UICollectionViewCell {
             timeLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             timeLabel.trailingAnchor.constraint(equalTo: trackButton.leadingAnchor, constant: -16),
             
-            // Настройки для надписи прогресса
             progressLabel.topAnchor.constraint(equalTo: topAnchor, constant: 92),
             progressLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             progressLabel.trailingAnchor.constraint(equalTo: trackButton.leadingAnchor, constant: -16)
@@ -91,8 +88,8 @@ class HabitCollectionViewCell: UICollectionViewCell {
     }
     
     private func setupCell() {
-        layer.cornerRadius = 10 // Закругляем углы
-        layer.masksToBounds = true // Обрезаем содержимое по закругленным границам
+        layer.cornerRadius = 10
+        layer.masksToBounds = true
     }
     
     func configure(with habit: Habit) {
@@ -101,37 +98,28 @@ class HabitCollectionViewCell: UICollectionViewCell {
         timeLabel.text = habit.dateString
         nameLabel.textColor = habit.color
         
-        updateProgress() // Обновляем прогресс привычки при конфигурации
+        updateProgress()
     }
     
     @objc private func trackButtonTapped() {
         guard let habit = habit else { return }
         
-        // Проверяем, можно ли добавить отметку: если выполнено менее 5 раз и не отмечено сегодня
-  //      let completionCount = habit.trackDates.filter { Calendar.current.isDateInToday($0) }.count
         let totalTrackCount = habit.trackDates.count
         
         if totalTrackCount < maxTrackCount && !habit.isAlreadyTakenToday {
-            // Сообщаем делегату о нажатии кнопки (это вызовет метод track() для привычки)
             delegate?.didTapTrackButton(for: habit)
             
-            // Обновляем прогресс привычки после добавления отметки
             updateProgress()
         } else {
-            // Привычка уже выполнена сегодня или достигнуто максимальное количество отметок
             print("Максимальное количество выполнений достигнуто или уже отмечено сегодня.")
         }
     }
     
-    // Метод для обновления прогресса по привычке
     private func updateProgress() {
         guard let habit = habit else { return }
         
-        // Считаем количество выполнений привычки
-//        let completionCount = habit.trackDates.filter { Calendar.current.isDateInToday($0) }.count
         let totalTrackCount = habit.trackDates.count
         
-        // Обновляем состояние кнопки отслеживания выполнения привычки
         if habit.isAlreadyTakenToday {
             trackButton.backgroundColor = habit.color
             trackButton.layer.borderColor = habit.color.cgColor
@@ -144,10 +132,8 @@ class HabitCollectionViewCell: UICollectionViewCell {
             trackButton.setTitleColor(.clear, for: .normal)
         }
         
-        // Обновляем текст в надписи прогресса
         progressLabel.text = "Счетчик: \(totalTrackCount)"
         
-        // Если достигнуто максимальное количество треков, блокируем кнопку
         trackButton.isEnabled = totalTrackCount < maxTrackCount && !habit.isAlreadyTakenToday
     }
 }
